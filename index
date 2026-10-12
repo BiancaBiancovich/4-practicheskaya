@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Открытки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 20px;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        /* Контейнер для формы */
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Поля ввода */
+        input, textarea, select, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Кнопка "Отправить" */
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Контейнер для истории открыток */
+        #history {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Базовый стиль открытки */
+        .postcard {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            word-wrap: break-word;
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        .postcard p {
+            margin: 5px 0;
+            line-height: 1.4;
+            position: relative; /* Чтобы текст был поверх фона */
+            z-index: 1;
+        }
+
+        /* Светлая тема */
+        .theme-light {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)'%3E%3Ccircle cx='12' cy='12' r='3' fill='%23cccccc' fill-opacity='0.4'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)'%3E%3Ccircle cx='12' cy='12' r='3' fill='%23cccccc' fill-opacity='0.4'/%3E%3C/g%3E%3C/svg%3E");
+            color: #333333;
+            border: 2px solid #ddd;
+        }
+
+        /* Темная тема */
+        .theme-dark {
+            background-color: #2c3e50;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)'%3E%3Ccircle cx='12' cy='12' r='2' fill='%23ffffff' fill-opacity='0.2'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)'%3E%3Ccircle cx='12' cy='12' r='2' fill='%23ffffff' fill-opacity='0.2'/%3E%3C/g%3E%3C/svg%3E");
+            color: #ecf0f1;
+            border: 2px solid #1a252f;
+        }
+
+        /* Новогодняя тема */
+        .theme-newyear {
+            background-color: #0f2027;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)' stroke='%23ffffff' stroke-opacity='0.2' stroke-width='2' stroke-linecap='round'%3E%3Cpath fill='none' d='M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3M4.93 4.93l3 3M4.93 4.93l3-3M19.07 4.93l-3 3M19.07 4.93l-3-3M4.93 19.07l3 3M4.93 19.07l3-3M19.07 19.07l-3 3M19.07 19.07l-3-3'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)' stroke='%23ffffff' stroke-opacity='0.2' stroke-width='2' stroke-linecap='round'%3E%3Cpath fill='none' d='M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3M4.93 4.93l3 3M4.93 4.93l3-3M19.07 4.93l-3 3M19.07 4.93l-3-3M4.93 19.07l3 3M4.93 19.07l3-3M19.07 19.07l-3 3M19.07 19.07l-3-3'/%3E%3C/g%3E%3C/svg%3E");
+            color: #ffffff;
+            border: 2px dashed #f1c40f;
+        }
+
+        /* Валентинка */
+        .theme-valentine {
+            background-color: #ffe6e6;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%23e74c3c' fill-opacity='0.15' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%23e74c3c' fill-opacity='0.15' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/g%3E%3C/svg%3E");
+            color: #c0392b;
+            border: 2px solid #e74c3c;
+            font-style: italic;
+        }
+
+        /* Космическая тема */
+        .theme-space {
+            background-color: #1a1a2e;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%2300d2ff' fill-opacity='0.15' d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%2300d2ff' fill-opacity='0.15' d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/g%3E%3C/svg%3E");
+            color: #00d2ff;
+            border: 1px solid #00d2ff;
+            box-shadow: 0 0 10px #00d2ff;
+        }
+
+        /* Хэллоуин */
+        .theme-halloween {
+            background-color: #2d1b1b;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg transform='translate(20, 20) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%23e67e22' fill-opacity='0.15' d='M12 5c-2.5 0-4.5 2-4.5 5v4c0 3 2 5 4.5 5s4.5-2 4.5-5v-4C16.5 7 14.5 5 12 5z'/%3E%3Cpath d='M12 3v2M8 7L6 6M16 7l2-1M9 12h2M13 12h2M10 16h4' stroke='%23e67e22' stroke-opacity='0.3' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/g%3E%3Cg transform='translate(80, 80) scale(1.5) translate(-12, -12)'%3E%3Cpath fill='%23e67e22' fill-opacity='0.15' d='M12 5c-2.5 0-4.5 2-4.5 5v4c0 3 2 5 4.5 5s4.5-2 4.5-5v-4C16.5 7 14.5 5 12 5z'/%3E%3Cpath d='M12 3v2M8 7L6 6M16 7l2-1M9 12h2M13 12h2M10 16h4' stroke='%23e67e22' stroke-opacity='0.3' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+            color: #f39c12;
+            border: 2px solid #e67e22;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Создание открытки</h1>
+
+    <div class="form-container">
+        <input type="text" id="to" placeholder="Кому">
+        <input type="text" id="from" placeholder="От кого">
+        <textarea id="text" placeholder="Текст открытки"></textarea>
+        
+        <select id="theme">
+            <option value="theme-light">Светлая тема</option>
+            <option value="theme-dark">Темная тема</option>
+            <option value="theme-newyear">Новогодняя тема</option>
+            <option value="theme-valentine">Тема Валентинка</option>
+            <option value="theme-space">Космическая тема</option>
+            <option value="theme-halloween">Хэллоуин</option>
+        </select>
+
+        <button id="sendBtn" disabled>Отправить</button>
+    </div>
+
+    <h2>История открыток</h2>
+    <div id="history">
+
+    </div>
+
+    <script>
+        const toInput = document.getElementById('to');
+        const fromInput = document.getElementById('from');
+        const textInput = document.getElementById('text');
+        const themeSelect = document.getElementById('theme');
+        const sendBtn = document.getElementById('sendBtn');
+        const historyDiv = document.getElementById('history');
+
+        let postcards = JSON.parse(localStorage.getItem('myPostcards')) || [];
+
+        function checkInputs() {
+            if (toInput.value.trim() !== '' && 
+                fromInput.value.trim() !== '' && 
+                textInput.value.trim() !== '') {
+                sendBtn.disabled = false; 
+            } else {
+                sendBtn.disabled = true;
+            }
+        }
+
+        toInput.addEventListener('input', checkInputs);
+        fromInput.addEventListener('input', checkInputs);
+        textInput.addEventListener('input', checkInputs);
+
+        function createPostcardElement(data) {
+            const card = document.createElement('div');
+            card.className = `postcard ${data.theme}`;
+            
+            card.innerHTML = `
+                <p><strong>Кому:</strong> ${data.to}</p>
+                <p><strong>От кого:</strong> ${data.from}</p>
+                <p><strong>Текст:</strong> ${data.text}</p>
+            `;
+            return card;
+        }
+
+        function loadHistory() {
+            historyDiv.innerHTML = '';
+            postcards.forEach(data => {
+                historyDiv.appendChild(createPostcardElement(data));
+            });
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const newCardData = {
+                to: toInput.value.trim(),
+                from: fromInput.value.trim(),
+                text: textInput.value.trim(),
+                theme: themeSelect.value
+            };
+            
+            postcards.push(newCardData);
+            
+            localStorage.setItem('myPostcards', JSON.stringify(postcards));
+            
+            historyDiv.appendChild(createPostcardElement(newCardData));
+            
+            toInput.value = '';
+            fromInput.value = '';
+            textInput.value = '';
+            
+            sendBtn.disabled = true;
+        });
+
+        window.addEventListener('DOMContentLoaded', loadHistory);
+
+    </script>
+</body>
+</html>
